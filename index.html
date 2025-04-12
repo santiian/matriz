@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operaciones con Matrices y Vectores</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #e0f7fa, #f0f8ff);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            animation: backgroundAnimation 10s infinite alternate;
+        }
+
+        @keyframes backgroundAnimation {
+            from {
+                background: linear-gradient(135deg, #e0f7fa, #f0f8ff);
+            }
+            to {
+                background: linear-gradient(135deg, #f0f8ff, #e0f7fa);
+            }
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1000px;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            color: #007BFF;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out, textShadow 3s infinite alternate, moveTitle 5s infinite alternate;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes textShadow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            to {
+                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @keyframes moveTitle {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(10px);
+            }
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            background: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .tab-button.active, .tab-button:hover {
+            background: #0056b3;
+        }
+
+        .matrix-input, .vector-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1em;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            height: 35px;
+            text-align: center;
+            background: #f0f8ff;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            background: #e0f7fa;
+            border-color: #007BFF;
+        }
+
+        .matrix-container, .result-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .matrix-row, .vector-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .matrix-card, .result-card, .vector-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: left;
+            animation: fadeInResult 1s ease-in-out;
+            transition: transform 0.3s;
+        }
+
+        .matrix-card:hover, .result-card:hover, .vector-card:hover {
+            transform: scale(1.05);
+        }
+
+        .matrix-card h3, .result-card h3, .vector-card h3 {
+            margin-top: 0;
+            color: #007BFF;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        button {
+            background: #007BFF;
+            color: #fff;
+            padding: 12px 25px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            75% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .procedure-content, .graph-content {
+            margin-top: 10px;
+        }
+
+        .graph-content {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .graph-content canvas {
+            max-width: 400px;
+            max-height: 300px;
+        }
+
+        .result-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .result-card .procedure-content {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        @media (max-width: 768px) {
+            .matrix-row, .vector-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .input-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .matrix-card, .result-card, .vector-card {
+                width: 90%;
+            }
+
+            .graph-content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInResult {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .result-table th, .result-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .result-table th {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Operaciones con Matrices y Vectores</h1>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'matrices-tab')">Matrices</button>
+            <button class="tab-button" onclick="openTab(event, 'vectores-tab')">Vectores</button>
+        </div>
+        <div id="matrices-tab" class="tab-content active">
+            <section class="matrix-input">
+                <div class="input-group" id="matrix-dimensions">
+                    <label>Filas: <input id="filas" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                    <label>Columnas: <input id="columnas" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                </div>
+                <button onclick="generarMatrices()">Generar Matrices</button>
+                <div id="error-message" class="error-message"></div>
+                <div class="matrix-container">
+                    <div class="matrix-row">
+                        <div id="matriz1" class="matrix-card"></div>
+                        <div id="matriz2" class="matrix-card"></div>
+                    </div>
+                </div>
+                <button onclick="realizarOperacionesMatrices()">Calcular Operaciones</button>
+                <section id="resultados-matrices" class="result-container">
+                    <div id="resultadoIframeMatrices"></div>
+                </section>
+            </section>
+        </div>
+        <div id="vectores-tab" class="tab-content">
+            <section class="vector-input">
+                <div class="input-group">
+                    <label>Tamaño: <input id="tamano" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                </div>
+                <button onclick="generarVectores()">Generar Vectores</button>
+                <div id="error-message-vectores" class="error-message"></div>
+                <div class="vector-container">
+                    <div class="vector-row">
+                        <div id="vector1" class="vector-card"></div>
+                        <div id="vector2" class="vector-card"></div>
+                    </div>
+                </div>
+                <button onclick="realizarOperacionesVectores()">Calcular Operaciones</button>
+                <section id="resultados-vectores" class="result-container">
+                    <div id="resultadoIframeVectores"></div>
+                </section>
+            </section>
+        </div>
+    </div>
+    <script>
+        let resultados = {};
+
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            const tablinks = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function crearTarjetaMatriz(id, filas, columnas) {
+            let tarjeta = `<div class="matrix-card"><h3>${id.toUpperCase()}</h3>`;
+            tarjeta += '<table class="result-table">';
+            for (let i = 0; i < filas; i++) {
+                tarjeta += '<tr>';
+                for (let j = 0; j < columnas; j++) {
+                    tarjeta += `<td><input id="${id}_${i}_${j}" type="number" step="any" oninput="validarEntrada(this)"></td>`;
+                }
+                tarjeta += '</tr>';
+            }
+            tarjeta += '</table></div>';
+            return tarjeta;
+        }
+
+        function crearTarjetaVector(id, tamano) {
+            let tarjeta = `<div class="vector-card"><h3>${id.toUpperCase()}</h3>`;
+            tarjeta += '<table class="result-table">';
+            tarjeta += '<tr>';
+            for (let i = 0; i < tamano; i++) {
+                tarjeta += `<td><input id="${id}_${i}" type="number" step="any" oninput="validarEntrada(this)"></td>`;
+            }
+            tarjeta += '</tr>';
+            tarjeta += '</table></div>';
+            return tarjeta;
+        }
+
+        function generarMatrices() {
+            const filas = parseInt(document.getElementById('filas').value) || 0;
+            const columnas = parseInt(document.getElementById('columnas').value) || 0;
+
+            if (filas === 0 || columnas === 0) {
+                mostrarMensajeError("Por favor, ingrese las dimensiones de las matrices.");
+                return;
+            }
+
+            document.getElementById("matriz1").innerHTML = crearTarjetaMatriz("matriz1", filas, columnas);
+            document.getElementById("matriz2").innerHTML = crearTarjetaMatriz("matriz2", filas, columnas);
+            document.getElementById("resultadoIframeMatrices").innerHTML = "";
+            document.getElementById("error-message").innerText = "";
+            resultados = {};
+        }
+
+        function generarVectores() {
+            const tamano = parseInt(document.getElementById('tamano').value) || 0;
+
+            if (tamano === 0) {
+                mostrarMensajeError("Por favor, ingrese el tamaño de los vectores.");
+                return;
+            }
+
+            document.getElementById("vector1").innerHTML = crearTarjetaVector("vector1", tamano);
+            document.getElementById("vector2").innerHTML = crearTarjetaVector("vector2", tamano);
+            document.getElementById("resultadoIframeVectores").innerHTML = "";
+            document.getElementById("error-message-vectores").innerText = "";
+            resultados = {};
+        }
+
+        function obtenerMatriz(id, filas, columnas) {
+            const matriz = [];
+            for (let i = 0; i < filas; i++) {
+                const fila = [];
+                for (let j = 0; j < columnas; j++) {
+                    const val = document.getElementById(`${id}_${i}_${j}`).value;
+                    if (val === "") {
+                        mostrarMensajeError("Por favor, complete todos los campos de la matriz.");
+                        return null;
+                    }
+                    fila.push(parseFloat(val));
+                }
+                matriz.push(fila);
+            }
+            return matriz;
+        }
+
+        function obtenerVector(id, tamano) {
+            const vector = [];
+            for (let i = 0; i < tamano; i++) {
+                const val = document.getElementById(`${id}_${i}`).value;
+                if (val === "") {
+                    mostrarMensajeError("Por favor, complete todos los campos del vector.");
+                    return null;
+                }
+                vector.push(parseFloat(val));
+            }
+            return vector;
+        }
+
+        function mostrarMensajeError(mensaje) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = mensaje;
+            setTimeout(() => {
+                errorElement.textContent = '';
+            }, 3000);
+        }
+
+        function validarEntrada(input) {
+            if (input.value === "") {
+                input.style.borderColor = "red";
+            } else {
+                input.style.borderColor = "#ccc";
+            }
+        }
+
+        function calcularDeterminante(matriz) {
+            if (matriz.length === 2 && matriz[0].length === 2) {
+                return matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0];
+            }
+            let det = 0;
+            for (let i = 0; i < matriz.length; i++) {
+                det += Math.pow(-1, i) * matriz[0][i] * calcularDeterminante(obtenerSubmatriz(matriz, 0, i));
+            }
+            return det;
+        }
+
+        function obtenerSubmatriz(matriz, fila, columna) {
+            const submatriz = [];
+            for (let i = 0; i < matriz.length; i++) {
+                if (i === fila) continue;
+                const filaSubmatriz = [];
+                for (let j = 0; j < matriz[i].length; j++) {
+                    if (j === columna) continue;
+                    filaSubmatriz.push(matriz[i][j]);
+                }
+                submatriz.push(filaSubmatriz);
+            }
+            return submatriz;
+        }
+
+        function calcularCofactores(matriz) {
+            const cofactores = [];
+            for (let i = 0; i < matriz.length; i++) {
+                const filaCofactores = [];
+                for (let j = 0; j < matriz[i].length; j++) {
+                    const submatriz = obtenerSubmatriz(matriz, i, j);
+                    const cofactor = Math.pow(-1, i + j) * calcularDeterminante(submatriz);
+                    filaCofactores.push(cofactor);
+                }
+                cofactores.push(filaCofactores);
+            }
+            return cofactores;
+        }
+
+        function calcularAdjunta(cofactores) {
+            return cofactores[0].map((_, j) => cofactores.map(fila => fila[j]));
+        }
+
+        function calcularInversa(matriz) {
+            const det = calcularDeterminante(matriz);
+            if (det === 0) {
+                throw new Error("El determinante es cero, la matriz no es invertible.");
+            }
+            const cofactores = calcularCofactores(matriz);
+            const adjunta = calcularAdjunta(cofactores);
+            return adjunta.map(fila => fila.map(num => num / det));
+        }
+
+        function calcularTranspuesta(matriz) {
+            return matriz[0].map((_, j) => matriz.map(fila => fila[j]));
+        }
+
+        function calcularSarrus(matriz) {
+            if (matriz.length !== 3 || matriz[0].length !== 3) {
+                throw new Error("La matriz debe ser de 3x3 para usar la regla de Sarrus");
+            }
+
+            const a = matriz[0][0], b = matriz[0][1], c = matriz[0][2];
+            const d = matriz[1][0], e = matriz[1][1], f = matriz[1][2];
+            const g = matriz[2][0], h = matriz[2][1], i = matriz[2][2];
+
+            const determinante = (a * e * i) + (b * f * g) + (c * d * h) - (c * e * g) - (a * f * h) - (b * d * i);
+
+            let procedimiento = "<h4>Procedimiento de Sarrus:</h4>";
+            procedimiento += `<p>Matriz original:</p>`;
+            procedimiento += `<p>| ${a} ${b} ${c} |</p>`;
+            procedimiento += `<p>| ${d} ${e} ${f} |</p>`;
+            procedimiento += `<p>| ${g} ${h} ${i} |</p>`;
+            procedimiento += `<p>Repetimos las dos primeras columnas:</p>`;
+            procedimiento += `<p>| ${a} ${b} ${c} | ${a} ${b} |</p>`;
+            procedimiento += `<p>| ${d} ${e} ${f} | ${d} ${e} |</p>`;
+            procedimiento += `<p>| ${g} ${h} ${i} | ${g} ${h} |</p>`;
+            procedimiento += `<p>Sumamos los productos de la diagonal principal:</p>`;
+            procedimiento += `<p>${a} * ${e} * ${i} + ${b} * ${f} * ${g} + ${c} * ${d} * ${h} = ${a * e * i} + ${b * f * g} + ${c * d * h}</p>`;
+            procedimiento += `<p>Restamos los productos de la diagonal secundaria:</p>`;
+            procedimiento += `<p>${c} * ${e} * ${g} + ${a} * ${f} * ${h} + ${b} * ${d} * ${i} = ${c * e * g} + ${a * f * h} + ${b * d * i}</p>`;
+            procedimiento += `<p>Determinante = ${a * e * i + b * f * g + c * d * h} - ${c * e * g + a * f * h + b * d * i} = ${determinante}</p>`;
+
+            return { determinante, procedimiento };
+        }
+
+        function eliminacionGauss(matriz) {
+            const n = matriz.length;
+            const ab = matriz.map(fila => [...fila]);
+            let procedimiento = "<h4>Procedimiento de Eliminación de Gauss:</h4>";
+
+            for (let i = 0; i < n; i++) {
+                if (ab[i][i] === 0) {
+                    for (let j = i + 1; j < n; j++) {
+                        if (ab[j][i] !== 0) {
+                            [ab[i], ab[j]] = [ab[j], ab[i]];
+                            procedimiento += `<p>Intercambiar filas: ${i + 1} y ${j + 1}</p>`;
+                            break;
+                        }
+                    }
+                }
+                if (ab[i][i] !== 0) {
+                    for (let j = i + 1; j < n; j++) {
+                        const factor = ab[j][i] / ab[i][i];
+                        for (let k = i; k < n + 1; k++) {
+                            ab[j][k] -= factor * ab[i][k];
+                        }
+                        procedimiento += `<p>Fila ${j + 1} = Fila ${j + 1} - ${factor} * Fila ${i + 1}</p>`;
+                    }
+                }
+            }
+
+            for (let i = n - 1; i >= 0; i--) {
+                let sum = ab[i][n];
+                for (let j = i + 1; j < n; j++) {
+                    sum -= ab[i][j] * ab[j][n];
+                }
+                ab[i][n] = sum / ab[i][i];
+                procedimiento += `<p>x${i + 1} = ${ab[i][n].toFixed(2)}</p>`;
+            }
+
+            return { solucion: ab.map(fila => fila[n]), procedimiento };
+        }
+
+        function calcularGaussJordan(matriz) {
+            const n = matriz.length;
+            const inversa = matriz.map((fila, i) => Array(n).fill(0).map((_, j) => i === j ? 1 : 0));
+            let procedimiento = "<h4>Procedimiento de Gauss-Jordan:</h4>";
+
+            for (let i = 0; i < n; i++) {
+                let maxRow = i;
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(matriz[k][i]) > Math.abs(matriz[maxRow][i])) {
+                        maxRow = k;
+                    }
+                }
+                [matriz[i], matriz[maxRow]] = [matriz[maxRow], matriz[i]];
+                [inversa[i], inversa[maxRow]] = [inversa[maxRow], inversa[i]];
+                procedimiento += `<p>Intercambiar filas: ${i + 1} y ${maxRow + 1}</p>`;
+
+                const factor = 1 / matriz[i][i];
+                for (let j = 0; j < n; j++) {
+                    matriz[i][j] *= factor;
+                    inversa[i][j] *= factor;
+                }
+                procedimiento += `<p>Fila ${i + 1} = Fila ${i + 1} / ${1 / factor}</p>`;
+
+                for (let k = 0; k < n; k++) {
+                    if (k !== i) {
+                        const factor = matriz[k][i];
+                        for (let j = 0; j < n; j++) {
+                            matriz[k][j] -= factor * matriz[i][j];
+                            inversa[k][j] -= factor * inversa[i][j];
+                        }
+                        procedimiento += `<p>Fila ${k + 1} = Fila ${k + 1} - ${factor} * Fila ${i + 1}</p>`;
+                    }
+                }
+            }
+
+            return { inversa, procedimiento };
+        }
+
+        function realizarOperacionElementoACelemento(matriz1, matriz2, operacion) {
+            return matriz1.map((fila, i) => fila.map((num, j) => operacion(num, matriz2[i][j])));
+        }
+
+        function multiplicarMatrices(matriz1, matriz2) {
+            const filas1 = matriz1.length;
+            const columnas2 = matriz2[0].length;
+            const columnas1 = matriz2.length;
+            const multiplicacion = Array.from({ length: filas1 }, () => new Array(columnas2).fill(0));
+
+            for (let i = 0; i < filas1; i++) {
+                for (let j = 0; j < columnas2; j++) {
+                    let sum = 0;
+                    for (let k = 0; k < columnas1; k++) {
+                        sum += matriz1[i][k] * matriz2[k][j];
+                    }
+                    multiplicacion[i][j] = sum;
+                }
+            }
+            return multiplicacion;
+        }
+
+        function sumarVectores(vector1, vector2) {
+            return vector1.map((num, i) => num + vector2[i]);
+        }
+
+        function restarVectores(vector1, vector2) {
+            return vector1.map((num, i) => num - vector2[i]);
+        }
+
+        function productoEscalar(vector, escalar) {
+            return vector.map(num => num * escalar);
+        }
+
+        function productoPunto(vector1, vector2) {
+            return vector1.reduce((sum, num, i) => sum + num * vector2[i], 0);
+        }
+
+        function productoCruz(vector1, vector2) {
+            if (vector1.length !== 3 || vector2.length !== 3) {
+                throw new Error("Los vectores deben ser de 3 dimensiones para el producto cruz.");
+            }
+            return [
+                vector1[1] * vector2[2] - vector1[2] * vector2[1],
+                vector1[2] * vector2[0] - vector1[0] * vector2[2],
+                vector1[0] * vector2[1] - vector1[1] * vector2[0]
+            ];
+        }
+
+        function multiplicarVectores(vector1, vector2) {
+            if (vector1.length !== vector2.length) {
+                throw new Error("Los vectores deben tener la misma longitud para la multiplicación.");
+            }
+            return vector1.map((num, i) => num * vector2[i]);
+        }
+
+        function dividirVectores(vector1, vector2) {
+            if (vector1.length !== vector2.length) {
+                throw new Error("Los vectores deben tener la misma longitud para la división.");
+            }
+            return vector1.map((num, i) => num / vector2[i]);
+        }
+
+        function potenciaVector(vector, exponente) {
+            return vector.map(num => Math.pow(num, exponente));
+        }
+
+        function raizLogaritmoVector(vector) {
+            return vector.map(num => Math.log10(num));
+        }
+
+        function multiplicarEscalarPorVector(escalar, vector) {
+            return vector.map(num => num * escalar);
+        }
+
+        function mostrarResultadoConProcedimiento(titulo, matriz, procedimientoTitulo, procedimiento) {
+            mostrarResultado(titulo, matriz, `<h4>${procedimientoTitulo}</h4>${procedimiento}`);
+        }
+
+        function generarProcedimiento(matriz1, matriz2, resultado, formato) {
+            let procedimiento = "";
+            for (let i = 0; i < matriz1.length; i++) {
+                for (let j = 0; j < matriz1[i].length; j++) {
+                    procedimiento += `<p>${formato(matriz1[i][j], matriz2[i][j])} = ${resultado[i][j]}</p>`;
+                }
+            }
+            return procedimiento;
+        }
+
+        function mostrarResultado(titulo, matriz, procedimiento = "") {
+            let resultado = `<div class="result-card"><h3>${titulo}</h3><table class="result-table">`;
+            for (const fila of matriz) {
+                resultado += '<tr>';
+                for (const num of fila) {
+                    resultado += `<td>${num % 1 === 0 ? num : num.toFixed(2)}</td>`;
+                }
+                resultado += '</tr>';
+            }
+            resultado += '</table>';
+            if (procedimiento) {
+                resultado += `<button onclick="toggleProcedimiento(this)">Ver Procedimiento</button>`;
+                resultado += `<div class="procedure-content" style="display:none;">${procedimiento}</div>`;
+            }
+            resultado += '<button onclick="mostrarGraficas(this)">Ver Gráfica</button>';
+            resultado += '<div class="graph-content" style="display:none;"></div>';
+            resultado += '</div>';
+            document.getElementById("resultadoIframeVectores").innerHTML += resultado;
+        }
+
+        function toggleProcedimiento(button) {
+            const procedureContent = button.nextElementSibling;
+            if (procedureContent.style.display === "none" || procedureContent.style.display === "") {
+                procedureContent.style.display = "block";
+                button.innerText = "Ocultar Procedimiento";
+            } else {
+                procedureContent.style.display = "none";
+                button.innerText = "Ver Procedimiento";
+            }
+        }
+
+        function mostrarGraficas(button) {
+            const graphContent = button.nextElementSibling;
+            if (graphContent.innerHTML === "") {
+                const resultSection = button.closest('.result-card');
+                const titulo = resultSection.querySelector('h3').innerText;
+                const matriz = obtenerMatrizDesdeTabla(resultSection.querySelector('table'));
+
+                crearGraficaBarras(graphContent, titulo, matriz);
+                crearGraficaLineal(graphContent, titulo, matriz);
+                crearDiagramaDispersion(graphContent, titulo, matriz);
+                crearTablaCircular(graphContent, titulo, matriz);
+                crearHistograma(graphContent, titulo, matriz);
+            }
+
+            if (graphContent.style.display === "none" || graphContent.style.display === "") {
+                graphContent.style.display = "flex";
+                button.innerText = "Ocultar Gráfica";
+            } else {
+                graphContent.style.display = "none";
+                button.innerText = "Ver Gráfica";
+            }
+        }
+
+        function obtenerMatrizDesdeTabla(table) {
+            const matriz = [];
+            const filas = table.querySelectorAll('tr');
+            filas.forEach(fila => {
+                const valores = [];
+                fila.querySelectorAll('td').forEach(td => {
+                    valores.push(parseFloat(td.innerText) || 0);
+                });
+                matriz.push(valores);
+            });
+            return matriz;
+        }
+
+        function crearGraficaBarras(container, titulo, matriz) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            container.appendChild(ctx.canvas);
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: matriz.map((_, i) => `Fila ${i + 1}`),
+                    datasets: matriz[0].map((_, j) => ({
+                        label: `Columna ${j + 1}`,
+                        data: matriz.map(fila => fila[j]),
+                        backgroundColor: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.2)`,
+                        borderColor: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 1)`,
+                        borderWidth: 1
+                    }))
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Gráfica de Barras - ${titulo}`
+                        }
+                    }
+                }
+            });
+        }
+
+        function crearGraficaLineal(container, titulo, matriz) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            container.appendChild(ctx.canvas);
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: matriz.map((_, i) => `Fila ${i + 1}`),
+                    datasets: matriz[0].map((_, j) => ({
+                        label: `Columna ${j + 1}`,
+                        data: matriz.map(fila => fila[j]),
+                        borderColor: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 1)`,
+                        fill: false
+                    }))
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Gráfica Lineal - ${titulo}`
+                        }
+                    }
+                }
+            });
+        }
+
+        function crearDiagramaDispersion(container, titulo, matriz) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            container.appendChild(ctx.canvas);
+
+            const datos = [];
+            for (let i = 0; i < matriz.length; i++) {
+                for (let j = 0; j < matriz[i].length; j++) {
+                    datos.push({ x: i + 1, y: matriz[i][j] });
+                }
+            }
+
+            new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Diagrama de Dispersión',
+                        data: datos,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            type: 'linear',
+                            position: 'bottom'
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Diagrama de Dispersión - ${titulo}`
+                        }
+                    }
+                }
+            });
+        }
+
+        function crearTablaCircular(container, titulo, matriz) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            container.appendChild(ctx.canvas);
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: matriz.map((_, i) => `Fila ${i + 1}`),
+                    datasets: [{
+                        label: 'Tabla Circular',
+                        data: matriz.map(fila => fila.reduce((a, b) => a + b, 0)),
+                        backgroundColor: matriz.map((_, i) => `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.2)`),
+                        borderColor: matriz.map((_, i) => `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 1)`),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Tabla Circular - ${titulo}`
+                        }
+                    }
+                }
+            });
+        }
+
+        function crearHistograma(container, titulo, matriz) {
+            const ctx = document.createElement('canvas').getContext('2d');
+            container.appendChild(ctx.canvas);
+
+            const data = matriz.flat();
+            const bins = {};
+            data.forEach(value => {
+                const bin = Math.floor(value);
+                bins[bin] = (bins[bin] || 0) + 1;
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(bins),
+                    datasets: [{
+                        label: 'Histograma',
+                        data: Object.values(bins),
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Histograma - ${titulo}`
+                        }
+                    }
+                }
+            });
+        }
+
+        function sustitucionHaciaAdelante(matriz) {
+            const n = matriz.length;
+            const solucion = new Array(n).fill(0);
+            let procedimiento = "<h4>Procedimiento de Sustitución Hacia Adelante:</h4>";
+
+            for (let i = 0; i < n; i++) {
+                let sum = matriz[i][n];
+                procedimiento += `<p>Resolviendo para x${i + 1}:</p>`;
+                for (let j = 0; j < i; j++) {
+                    sum -= matriz[i][j] * solucion[j];
+                    procedimiento += `<p>x${i + 1} -= ${matriz[i][j]} * ${solucion[j]}</p>`;
+                }
+                solucion[i] = sum / matriz[i][i];
+                procedimiento += `<p>x${i + 1} = ${sum} / ${matriz[i][i]} = ${solucion[i].toFixed(2)}</p>`;
+            }
+
+            return { solucion, procedimiento };
+        }
+
+        function sustitucionHaciaAtras(matriz) {
+            const n = matriz.length;
+            const solucion = new Array(n).fill(0);
+            let procedimiento = "<h4>Procedimiento de Sustitución Hacia Atrás:</h4>";
+
+            for (let i = n - 1; i >= 0; i--) {
+                let sum = matriz[i][n];
+                procedimiento += `<p>Resolviendo para x${i + 1}:</p>`;
+                for (let j = i + 1; j < n; j++) {
+                    sum -= matriz[i][j] * solucion[j];
+                    procedimiento += `<p>x${i + 1} -= ${matriz[i][j]} * ${solucion[j]}</p>`;
+                }
+                solucion[i] = sum / matriz[i][i];
+                procedimiento += `<p>x${i + 1} = ${sum} / ${matriz[i][i]} = ${solucion[i].toFixed(2)}</p>`;
+            }
+
+            return { solucion, procedimiento };
+        }
+
+        function realizarOperacionesMatrices() {
+            document.getElementById("resultadoIframeMatrices").innerHTML = "";
+
+            const filas = parseInt(document.getElementById('filas').value) || 0;
+            const columnas = parseInt(document.getElementById('columnas').value) || 0;
+
+            const matriz1 = obtenerMatriz('matriz1', filas, columnas);
+            const matriz2 = obtenerMatriz('matriz2', filas, columnas);
+
+            if (!matriz1 || !matriz2) {
+                return;
+            }
+
+            let procedimiento = "";
+
+            if (filas === columnas) {
+                const suma = realizarOperacionElementoACelemento(matriz1, matriz2, (a, b) => a + b);
+                const resta = realizarOperacionElementoACelemento(matriz1, matriz2, (a, b) => a - b);
+
+                let sumaProcedimiento = "<h4>Procedimiento de Suma:</h4>";
+                let restaProcedimiento = "<h4>Procedimiento de Resta:</h4>";
+
+                for (let i = 0; i < filas; i++) {
+                    for (let j = 0; j < columnas; j++) {
+                        sumaProcedimiento += `<p>${matriz1[i][j]} + ${matriz2[i][j]} = ${suma[i][j]}</p>`;
+                        restaProcedimiento += `<p>${matriz1[i][j]} - ${matriz2[i][j]} = ${resta[i][j]}</p>`;
+                    }
+                }
+
+                mostrarResultadoConProcedimiento("Suma", suma, "Procedimiento de Suma", sumaProcedimiento);
+                mostrarResultadoConProcedimiento("Resta", resta, "Procedimiento de Resta", restaProcedimiento);
+
+                procedimiento += sumaProcedimiento + restaProcedimiento;
+
+                if (filas === columnas && calcularDeterminante(matriz2) !== 0) {
+                    const inversaMatriz2 = calcularInversa(matriz2);
+                    const division = matriz1.map((fila, i) =>
+                        inversaMatriz2[0].map((_, j) =>
+                            inversaMatriz2.map((_, k) => matriz1[i][k] * inversaMatriz2[k][j]).reduce((a, b) => a + b, 0)
+                        )
+                    );
+
+                    let divisionProcedimiento = "<h4>Procedimiento de División:</h4>";
+                    divisionProcedimiento += `<p>Determinante de Matriz 2: ${calcularDeterminante(matriz2)}</p>`;
+                    divisionProcedimiento += "<p>Matriz de Cofactores:</p>";
+                    const cofactores = calcularCofactores(matriz2);
+                    divisionProcedimiento += cofactores.map((fila, i) =>
+                        fila.map((cofactor, j) => `<p>Cofactor (${i + 1},${j + 1}): ${cofactor}</p>`).join("")
+                    ).join("");
+                    divisionProcedimiento += "<p>Matriz Adjunta:</p>";
+                    const adjunta = calcularAdjunta(cofactores);
+                    divisionProcedimiento += adjunta.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+                    divisionProcedimiento += "<p>Inversa de Matriz 2:</p>";
+                    divisionProcedimiento += inversaMatriz2.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+
+                    for (let i = 0; i < filas; i++) {
+                        for (let j = 0; j < columnas; j++) {
+                            const elementos = matriz1[i].map((_, k) => `${matriz1[i][k]} * ${inversaMatriz2[k][j]}`).join(" + ");
+                            divisionProcedimiento += `<p>Elemento (${i + 1},${j + 1}): ${elementos} = ${division[i][j]}</p>`;
+                        }
+                    }
+
+                    mostrarResultadoConProcedimiento("División", division, "Procedimiento de División", divisionProcedimiento);
+                    procedimiento += divisionProcedimiento;
+                } else {
+                    mostrarMensajeError("No se puede realizar la división. La segunda matriz debe ser cuadrada e invertible.");
+                }
+            } else {
+                mostrarMensajeError("No se pueden sumar/restar matrices de distinto tamaño.");
+            }
+
+            if (columnas === filas) {
+                const multiplicacion = multiplicarMatrices(matriz1, matriz2);
+                let multiProcedimiento = "<h4>Procedimiento de Multiplicación:</h4>";
+                for (let i = 0; i < filas; i++) {
+                    for (let j = 0; j < columnas; j++) {
+                        let sum = "";
+                        for (let k = 0; k < columnas; k++) {
+                            sum += `${matriz1[i][k]} * ${matriz2[k][j]} + `;
+                        }
+                        multiProcedimiento += `<p>${sum.slice(0, -3)} = ${multiplicacion[i][j]}</p>`;
+                    }
+                }
+                mostrarResultadoConProcedimiento("Multiplicación", multiplicacion, "Procedimiento de Multiplicación", multiProcedimiento);
+                procedimiento += multiProcedimiento;
+            } else {
+                mostrarMensajeError("No se pueden multiplicar las matrices. El número de columnas de la primera matriz debe ser igual al número de filas de la segunda matriz.");
+            }
+
+            if (filas === columnas && calcularDeterminante(matriz1) !== 0) {
+                const inversaMatriz1 = calcularInversa(matriz1);
+                let inversaProcedimiento = "<h4>Procedimiento de Inversa:</h4>";
+                inversaProcedimiento += `<p>Determinante de Matriz 1: ${calcularDeterminante(matriz1)}</p>`;
+                inversaProcedimiento += "<p>Matriz de Cofactores:</p>";
+                const cofactores1 = calcularCofactores(matriz1);
+                inversaProcedimiento += cofactores1.map((fila, i) =>
+                    fila.map((cofactor, j) => `<p>Cofactor (${i + 1},${j + 1}): ${cofactor}</p>`).join("")
+                ).join("");
+                inversaProcedimiento += "<p>Matriz Adjunta:</p>";
+                const adjunta1 = calcularAdjunta(cofactores1);
+                inversaProcedimiento += adjunta1.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+                inversaProcedimiento += "<p>Inversa de Matriz:</p>";
+                inversaProcedimiento += inversaMatriz1.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+
+                mostrarResultadoConProcedimiento("Inversa de Matriz 1", inversaMatriz1, "Procedimiento de Inversa", inversaProcedimiento);
+                procedimiento += inversaProcedimiento;
+            } else {
+                mostrarResultado("Inversa de Matriz 1", [["No se puede calcular la inversa. La matriz debe ser cuadrada e invertible."]]);
+            }
+
+            if (filas === 3 && columnas === 3) {
+                const { determinante, procedimiento: sarrusProcedimiento } = calcularSarrus(matriz1);
+                mostrarResultadoConProcedimiento("Determinante por Sarrus", [[determinante]], "Procedimiento de Sarrus", sarrusProcedimiento);
+            }
+
+            if (filas === columnas) {
+                const { solucion, procedimiento: gaussProcedimiento } = eliminacionGauss(matriz1.map(fila => [...fila, 0]));
+                mostrarResultadoConProcedimiento("Solución por Eliminación de Gauss", [solucion], "Procedimiento de Gauss", gaussProcedimiento);
+            }
+
+            if (filas === columnas) {
+                const { inversa, procedimiento: gaussJordanProcedimiento } = calcularGaussJordan(matriz1);
+                mostrarResultadoConProcedimiento("Inversa por Gauss-Jordan", inversa, "Procedimiento de Gauss-Jordan", gaussJordanProcedimiento);
+            }
+
+            const transpuestaMatriz1 = calcularTranspuesta(matriz1);
+            mostrarResultado("Transpuesta de Matriz 1", transpuestaMatriz1);
+
+            const transpuestaMatriz2 = calcularTranspuesta(matriz2);
+            mostrarResultado("Transpuesta de Matriz 2", transpuestaMatriz2);
+
+            if (filas === columnas) {
+                const cofactoresMatriz1 = calcularCofactores(matriz1);
+                const adjuntaMatriz1 = calcularAdjunta(cofactoresMatriz1);
+                mostrarResultado("Adjunta de Matriz 1", adjuntaMatriz1);
+            }
+
+            if (filas === columnas) {
+                const cofactoresMatriz2 = calcularCofactores(matriz2);
+                const adjuntaMatriz2 = calcularAdjunta(cofactoresMatriz2);
+                mostrarResultado("Adjunta de Matriz 2", adjuntaMatriz2);
+            }
+
+            if (filas === columnas && calcularDeterminante(matriz2) !== 0) {
+                const inversaMatriz2 = calcularInversa(matriz2);
+                let inversaProcedimientoMatriz2 = "<h4>Procedimiento de Inversa de Matriz 2:</h4>";
+                inversaProcedimientoMatriz2 += `<p>Determinante de Matriz 2: ${calcularDeterminante(matriz2)}</p>`;
+                inversaProcedimientoMatriz2 += "<p>Matriz de Cofactores:</p>";
+                const cofactores2 = calcularCofactores(matriz2);
+                inversaProcedimientoMatriz2 += cofactores2.map((fila, i) =>
+                    fila.map((cofactor, j) => `<p>Cofactor (${i + 1},${j + 1}): ${cofactor}</p>`).join("")
+                ).join("");
+                inversaProcedimientoMatriz2 += "<p>Matriz Adjunta:</p>";
+                const adjunta2 = calcularAdjunta(cofactores2);
+                inversaProcedimientoMatriz2 += adjunta2.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+                inversaProcedimientoMatriz2 += "<p>Inversa de Matriz 2:</p>";
+                inversaProcedimientoMatriz2 += inversaMatriz2.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+
+                mostrarResultadoConProcedimiento("Inversa de Matriz 2", inversaMatriz2, "Procedimiento de Inversa de Matriz 2", inversaProcedimientoMatriz2);
+            } else {
+                mostrarResultado("Inversa de Matriz 2", [["No se puede calcular la inversa. La matriz debe ser cuadrada e invertible."]]);
+            }
+
+            if (filas === columnas) {
+                const matrizAumentadaAdelante = matriz1.map(fila => [...fila, 0]);
+                const { solucion: solucionAdelante, procedimiento: procedimientoAdelante } = sustitucionHaciaAdelante(matrizAumentadaAdelante);
+                mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Adelante", [solucionAdelante], "Procedimiento de Sustitución Hacia Adelante", procedimientoAdelante);
+            }
+
+            if (filas === columnas) {
+                const matrizAumentadaAtras = matriz1.map(fila => [...fila, 0]);
+                const { solucion: solucionAtras, procedimiento: procedimientoAtras } = sustitucionHaciaAtras(matrizAumentadaAtras);
+                mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Atrás", [solucionAtras], "Procedimiento de Sustitución Hacia Atrás", procedimientoAtras);
+            }
+
+            const escalar = 2;
+            const multiplicacionEscalarMatriz1 = matriz1.map(fila => fila.map(num => num * escalar));
+            const multiplicacionEscalarMatriz2 = matriz2.map(fila => fila.map(num => num * escalar));
+
+            let multiplicacionEscalarProcedimientoMatriz1 = "<h4>Procedimiento de Multiplicación Escalar por Matriz 1:</h4>";
+            let multiplicacionEscalarProcedimientoMatriz2 = "<h4>Procedimiento de Multiplicación Escalar por Matriz 2:</h4>";
+
+            for (let i = 0; i < filas; i++) {
+                for (let j = 0; j < columnas; j++) {
+                    multiplicacionEscalarProcedimientoMatriz1 += `<p>${escalar} * ${matriz1[i][j]} = ${multiplicacionEscalarMatriz1[i][j]}</p>`;
+                }
+            }
+
+            for (let i = 0; i < filas; i++) {
+                for (let j = 0; j < columnas; j++) {
+                    multiplicacionEscalarProcedimientoMatriz2 += `<p>${escalar} * ${matriz2[i][j]} = ${multiplicacionEscalarMatriz2[i][j]}</p>`;
+                }
+            }
+
+            mostrarResultadoConProcedimiento("Multiplicación Escalar por Matriz 1", multiplicacionEscalarMatriz1, "Procedimiento de Multiplicación Escalar por Matriz 1", multiplicacionEscalarProcedimientoMatriz1);
+            mostrarResultadoConProcedimiento("Multiplicación Escalar por Matriz 2", multiplicacionEscalarMatriz2, "Procedimiento de Multiplicación Escalar por Matriz 2", multiplicacionEscalarProcedimientoMatriz2);
+
+            if (filas === columnas && filas === columnas && filas === columnas) {
+                const multiplicacionA1x1 = matriz1.map((fila, i) => fila.map((_, j) => matriz1[i][j] * matriz2[i][j]));
+                let multiplicacionA1x1Procedimiento = "<h4>Procedimiento de Multiplicación A1x1:</h4>";
+
+                for (let i = 0; i < filas; i++) {
+                    for (let j = 0; j < columnas; j++) {
+                        multiplicacionA1x1Procedimiento += `<p>${matriz1[i][j]} * ${matriz2[i][j]} = ${multiplicacionA1x1[i][j]}</p>`;
+                    }
+                }
+
+                mostrarResultadoConProcedimiento("Multiplicación A1x1", multiplicacionA1x1, "Procedimiento de Multiplicación A1x1", multiplicacionA1x1Procedimiento);
+            }
+        }
+
+        function realizarOperacionesVectores() {
+            document.getElementById("resultadoIframeVectores").innerHTML = "";
+
+            const tamano = parseInt(document.getElementById('tamano').value) || 0;
+
+            const vector1 = obtenerVector('vector1', tamano);
+            const vector2 = obtenerVector('vector2', tamano);
+
+            if (!vector1 || !vector2) {
+                return;
+            }
+
+            let procedimiento = "";
+
+            const sumaVectoresResultado = sumarVectores(vector1, vector2);
+            const restaVectoresResultado = restarVectores(vector1, vector2);
+            const productoEscalarResultado = productoEscalar(vector1, 2);
+            const productoPuntoResultado = productoPunto(vector1, vector2);
+            const multiplicacionVectoresResultado = multiplicarVectores(vector1, vector2);
+            const divisionVectoresResultado = dividirVectores(vector1, vector2);
+            const potenciaVectorResultado = potenciaVector(vector1, 2);
+            const raizLogaritmoVectorResultado = raizLogaritmoVector(vector1);
+            const multiplicacionEscalarResultado = multiplicarEscalarPorVector(3, vector1);
+
+            let sumaVectoresProcedimiento = "<h4>Procedimiento de Suma de Vectores:</h4>";
+            let restaVectoresProcedimiento = "<h4>Procedimiento de Resta de Vectores:</h4>";
+            let productoEscalarProcedimiento = "<h4>Procedimiento de Producto Escalar:</h4>";
+            let productoPuntoProcedimiento = "<h4>Procedimiento de Producto Punto:</h4>";
+            let multiplicacionVectoresProcedimiento = "<h4>Procedimiento de Multiplicación de Vectores:</h4>";
+            let divisionVectoresProcedimiento = "<h4>Procedimiento de División de Vectores:</h4>";
+            let potenciaVectorProcedimiento = "<h4>Procedimiento de Potencia de Vector:</h4>";
+            let raizLogaritmoVectorProcedimiento = "<h4>Procedimiento de Raíz Logarítmica de Vector:</h4>";
+            let multiplicacionEscalarProcedimiento = "<h4>Procedimiento de Multiplicación de Escalar por Vector:</h4>";
+
+            for (let i = 0; i < tamano; i++) {
+                sumaVectoresProcedimiento += `<p>${vector1[i]} + ${vector2[i]} = ${sumaVectoresResultado[i]}</p>`;
+                restaVectoresProcedimiento += `<p>${vector1[i]} - ${vector2[i]} = ${restaVectoresResultado[i]}</p>`;
+                productoEscalarProcedimiento += `<p>${vector1[i]} * 2 = ${productoEscalarResultado[i]}</p>`;
+                multiplicacionVectoresProcedimiento += `<p>${vector1[i]} * ${vector2[i]} = ${multiplicacionVectoresResultado[i]}</p>`;
+                divisionVectoresProcedimiento += `<p>${vector1[i]} / ${vector2[i]} = ${divisionVectoresResultado[i]}</p>`;
+                potenciaVectorProcedimiento += `<p>${vector1[i]} ^ 2 = ${potenciaVectorResultado[i]}</p>`;
+                raizLogaritmoVectorProcedimiento += `<p>log(${vector1[i]}) = ${raizLogaritmoVectorResultado[i]}</p>`;
+                multiplicacionEscalarProcedimiento += `<p>3 * ${vector1[i]} = ${multiplicacionEscalarResultado[i]}</p>`;
+            }
+
+            productoPuntoProcedimiento += `<p>${vector1.join(" * ") + " * " + vector2.join(" + ") + " = " + productoPuntoResultado}</p>`;
+
+            mostrarResultadoConProcedimiento("Suma de Vectores", [sumaVectoresResultado], "Procedimiento de Suma de Vectores", sumaVectoresProcedimiento);
+            mostrarResultadoConProcedimiento("Resta de Vectores", [restaVectoresResultado], "Procedimiento de Resta de Vectores", restaVectoresProcedimiento);
+            mostrarResultadoConProcedimiento("Producto Escalar", [productoEscalarResultado], "Procedimiento de Producto Escalar", productoEscalarProcedimiento);
+            mostrarResultadoConProcedimiento("Producto Punto", [[productoPuntoResultado]], "Procedimiento de Producto Punto", productoPuntoProcedimiento);
+            mostrarResultadoConProcedimiento("Multiplicación de Vectores", [multiplicacionVectoresResultado], "Procedimiento de Multiplicación de Vectores", multiplicacionVectoresProcedimiento);
+            mostrarResultadoConProcedimiento("División de Vectores", [divisionVectoresResultado], "Procedimiento de División de Vectores", divisionVectoresProcedimiento);
+            mostrarResultadoConProcedimiento("Potencia de Vector", [potenciaVectorResultado], "Procedimiento de Potencia de Vector", potenciaVectorProcedimiento);
+            mostrarResultadoConProcedimiento("Raíz Logarítmica de Vector", [raizLogaritmoVectorResultado], "Procedimiento de Raíz Logarítmica de Vector", raizLogaritmoVectorProcedimiento);
+            mostrarResultadoConProcedimiento("Multiplicación de Escalar por Vector", [multiplicacionEscalarResultado], "Procedimiento de Multiplicación de Escalar por Vector", multiplicacionEscalarProcedimiento);
+
+            if (tamano === 3) {
+                const productoCruzResultado = productoCruz(vector1, vector2);
+                let productoCruzProcedimiento = "<h4>Procedimiento de Producto Cruz:</h4>";
+                productoCruzProcedimiento += `<p>${vector1[1]} * ${vector2[2]} - ${vector1[2]} * ${vector2[1]} = ${productoCruzResultado[0]}</p>`;
+                productoCruzProcedimiento += `<p>${vector1[2]} * ${vector2[0]} - ${vector1[0]} * ${vector2[2]} = ${productoCruzResultado[1]}</p>`;
+                productoCruzProcedimiento += `<p>${vector1[0]} * ${vector2[1]} - ${vector1[1]} * ${vector2[0]} = ${productoCruzResultado[2]}</p>`;
+
+                mostrarResultadoConProcedimiento("Producto Cruz", [productoCruzResultado], "Procedimiento de Producto Cruz", productoCruzProcedimiento);
+            }
+
+            const matrizVector1 = [vector1];
+            const matrizVector2 = [vector2];
+
+            const transpuestaVector1 = calcularTranspuesta(matrizVector1);
+            mostrarResultado("Transpuesta de Vector 1", transpuestaVector1);
+
+            const transpuestaVector2 = calcularTranspuesta(matrizVector2);
+            mostrarResultado("Transpuesta de Vector 2", transpuestaVector2);
+
+            if (tamano === columnas) {
+                const cofactoresVector1 = calcularCofactores(matrizVector1);
+                const adjuntaVector1 = calcularAdjunta(cofactoresVector1);
+                mostrarResultado("Adjunta de Vector 1", adjuntaVector1);
+            }
+
+            if (tamano === columnas) {
+                const cofactoresVector2 = calcularCofactores(matrizVector2);
+                const adjuntaVector2 = calcularAdjunta(cofactoresVector2);
+                mostrarResultado("Adjunta de Vector 2", adjuntaVector2);
+            }
+
+            if (tamano === columnas && calcularDeterminante(matrizVector1) !== 0) {
+                const inversaVector1 = calcularInversa(matrizVector1);
+                let inversaProcedimientoVector1 = "<h4>Procedimiento de Inversa de Vector 1:</h4>";
+                inversaProcedimientoVector1 += `<p>Determinante de Vector 1: ${calcularDeterminante(matrizVector1)}</p>`;
+                inversaProcedimientoVector1 += "<p>Matriz de Cofactores:</p>";
+                const cofactoresVector1 = calcularCofactores(matrizVector1);
+                inversaProcedimientoVector1 += cofactoresVector1.map((fila, i) =>
+                    fila.map((cofactor, j) => `<p>Cofactor (${i + 1},${j + 1}): ${cofactor}</p>`).join("")
+                ).join("");
+                inversaProcedimientoVector1 += "<p>Matriz Adjunta:</p>";
+                const adjuntaVector1 = calcularAdjunta(cofactoresVector1);
+                inversaProcedimientoVector1 += adjuntaVector1.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+                inversaProcedimientoVector1 += "<p>Inversa de Vector 1:</p>";
+                inversaProcedimientoVector1 += inversaVector1.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+
+                mostrarResultadoConProcedimiento("Inversa de Vector 1", inversaVector1, "Procedimiento de Inversa de Vector 1", inversaProcedimientoVector1);
+            } else {
+                mostrarResultado("Inversa de Vector 1", [["No se puede calcular la inversa. El vector debe ser cuadrado e invertible."]]);
+            }
+
+            if (tamano === columnas && calcularDeterminante(matrizVector2) !== 0) {
+                const inversaVector2 = calcularInversa(matrizVector2);
+                let inversaProcedimientoVector2 = "<h4>Procedimiento de Inversa de Vector 2:</h4>";
+                inversaProcedimientoVector2 += `<p>Determinante de Vector 2: ${calcularDeterminante(matrizVector2)}</p>`;
+                inversaProcedimientoVector2 += "<p>Matriz de Cofactores:</p>";
+                const cofactoresVector2 = calcularCofactores(matrizVector2);
+                inversaProcedimientoVector2 += cofactoresVector2.map((fila, i) =>
+                    fila.map((cofactor, j) => `<p>Cofactor (${i + 1},${j + 1}): ${cofactor}</p>`).join("")
+                ).join("");
+                inversaProcedimientoVector2 += "<p>Matriz Adjunta:</p>";
+                const adjuntaVector2 = calcularAdjunta(cofactoresVector2);
+                inversaProcedimientoVector2 += adjuntaVector2.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+                inversaProcedimientoVector2 += "<p>Inversa de Vector 2:</p>";
+                inversaProcedimientoVector2 += inversaVector2.map(fila => `<p>${fila.join("  ")}</p>`).join("");
+
+                mostrarResultadoConProcedimiento("Inversa de Vector 2", inversaVector2, "Procedimiento de Inversa de Vector 2", inversaProcedimientoVector2);
+            } else {
+                mostrarResultado("Inversa de Vector 2", [["No se puede calcular la inversa. El vector debe ser cuadrado e invertible."]]);
+            }
+
+            if (tamano === columnas) {
+                const matrizAumentadaAdelanteVector1 = matrizVector1.map(fila => [...fila, 0]);
+                const { solucion: solucionAdelanteVector1, procedimiento: procedimientoAdelanteVector1 } = sustitucionHaciaAdelante(matrizAumentadaAdelanteVector1);
+                mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Adelante de Vector 1", [solucionAdelanteVector1], "Procedimiento de Sustitución Hacia Adelante de Vector 1", procedimientoAdelanteVector1);
+            }
+
+            if (tamano === columnas) {
+                const matrizAumentadaAtrasVector1 = matrizVector1.map(fila => [...fila, 0]);
+                const { solucion: solucionAtrasVector1, procedimiento: procedimientoAtrasVector1 } = sustitucionHaciaAtras(matrizAumentadaAtrasVector1);
+                mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Atrás de Vector 1", [solucionAtrasVector1], "Procedimiento de Sustitución Hacia Atrás de Vector 1", procedimientoAtrasVector1);
+            }
+
+            const escalarVector = 2;
+            const multiplicacionEscalarVector1 = vector1.map(num => num * escalarVector);
+            const multiplicacionEscalarVector2 = vector2.map(num => num * escalarVector);
+
+            let multiplicacionEscalarProcedimientoVector1 = "<h4>Procedimiento de Multiplicación Escalar por Vector 1:</h4>";
+            let multiplicacionEscalarProcedimientoVector2 = "<h4>Procedimiento de Multiplicación Escalar por Vector 2:</h4>";
+
+            for (let i = 0; i < tamano; i++) {
+                multiplicacionEscalarProcedimientoVector1 += `<p>${escalarVector} * ${vector1[i]} = ${multiplicacionEscalarVector1[i]}</p>`;
+            }
+
+            for (let i = 0; i < tamano; i++) {
+                multiplicacionEscalarProcedimientoVector2 += `<p>${escalarVector} * ${vector2[i]} = ${multiplicacionEscalarVector2[i]}</p>`;
+            }
+
+            mostrarResultadoConProcedimiento("Multiplicación Escalar por Vector 1", [multiplicacionEscalarVector1], "Procedimiento de Multiplicación Escalar por Vector 1", multiplicacionEscalarProcedimientoVector1);
+            mostrarResultadoConProcedimiento("Multiplicación Escalar por Vector 2", [multiplicacionEscalarVector2], "Procedimiento de Multiplicación Escalar por Vector 2", multiplicacionEscalarProcedimientoVector2);
+
+            if (tamano === columnas && tamano === columnas && tamano === columnas) {
+                const multiplicacionA1x1Vector = vector1.map((_, j) => vector1[j] * vector2[j]);
+                let multiplicacionA1x1ProcedimientoVector = "<h4>Procedimiento de Multiplicación A1x1 de Vectores:</h4>";
+
+                for (let j = 0; j < tamano; j++) {
+                    multiplicacionA1x1ProcedimientoVector += `<p>${vector1[j]} * ${vector2[j]} = ${multiplicacionA1x1Vector[j]}</p>`;
+                }
+
+                mostrarResultadoConProcedimiento("Multiplicación A1x1 de Vectores", [multiplicacionA1x1Vector], "Procedimiento de Multiplicación A1x1 de Vectores", multiplicacionA1x1ProcedimientoVector);
+            }
+        }
+    </script>
+</body>
+</html>
