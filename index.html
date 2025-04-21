@@ -314,9 +314,13 @@
         </div>
         <div id="matrices-tab" class="tab-content active">
             <section class="matrix-input">
-                <div class="input-group" id="matrix-dimensions">
-                    <label>Filas: <input id="filas" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
-                    <label>Columnas: <input id="columnas" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                <div class="input-group" id="matrix1-dimensions">
+                    <label>Filas Matriz 1: <input id="filas1" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                    <label>Columnas Matriz 1: <input id="columnas1" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                </div>
+                <div class="input-group" id="matrix2-dimensions">
+                    <label>Filas Matriz 2: <input id="filas2" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
+                    <label>Columnas Matriz 2: <input id="columnas2" type="number" min="1" value="2" oninput="validarEntrada(this)"></label>
                 </div>
                 <button onclick="generarMatrices()">Generar Matrices</button>
                 <div id="error-message" class="error-message"></div>
@@ -397,16 +401,18 @@
         }
 
         function generarMatrices() {
-            const filas = parseInt(document.getElementById('filas').value) || 0;
-            const columnas = parseInt(document.getElementById('columnas').value) || 0;
+            const filas1 = parseInt(document.getElementById('filas1').value) || 0;
+            const columnas1 = parseInt(document.getElementById('columnas1').value) || 0;
+            const filas2 = parseInt(document.getElementById('filas2').value) || 0;
+            const columnas2 = parseInt(document.getElementById('columnas2').value) || 0;
 
-            if (filas === 0 || columnas === 0) {
+            if (filas1 === 0 || columnas1 === 0 || filas2 === 0 || columnas2 === 0) {
                 mostrarMensajeError("Por favor, ingrese las dimensiones de las matrices.");
                 return;
             }
 
-            document.getElementById("matriz1").innerHTML = crearTarjetaMatriz("matriz1", filas, columnas);
-            document.getElementById("matriz2").innerHTML = crearTarjetaMatriz("matriz2", filas, columnas);
+            document.getElementById("matriz1").innerHTML = crearTarjetaMatriz("matriz1", filas1, columnas1);
+            document.getElementById("matriz2").innerHTML = crearTarjetaMatriz("matriz2", filas2, columnas2);
             document.getElementById("resultadoIframeMatrices").innerHTML = "";
             document.getElementById("error-message").innerText = "";
             resultados = {};
@@ -741,7 +747,7 @@
             resultado += '<button onclick="mostrarGraficas(this)">Ver Gráfica</button>';
             resultado += '<div class="graph-content" style="display:none;"></div>';
             resultado += '</div>';
-            document.getElementById("resultadoIframeVectores").innerHTML += resultado;
+            document.getElementById("resultadoIframeMatrices").innerHTML += resultado;
         }
 
         function toggleProcedimiento(button) {
@@ -996,11 +1002,13 @@
         function realizarOperacionesMatrices() {
             document.getElementById("resultadoIframeMatrices").innerHTML = "";
 
-            const filas = parseInt(document.getElementById('filas').value) || 0;
-            const columnas = parseInt(document.getElementById('columnas').value) || 0;
+            const filas1 = parseInt(document.getElementById('filas1').value) || 0;
+            const columnas1 = parseInt(document.getElementById('columnas1').value) || 0;
+            const filas2 = parseInt(document.getElementById('filas2').value) || 0;
+            const columnas2 = parseInt(document.getElementById('columnas2').value) || 0;
 
-            const matriz1 = obtenerMatriz('matriz1', filas, columnas);
-            const matriz2 = obtenerMatriz('matriz2', filas, columnas);
+            const matriz1 = obtenerMatriz('matriz1', filas1, columnas1);
+            const matriz2 = obtenerMatriz('matriz2', filas2, columnas2);
 
             if (!matriz1 || !matriz2) {
                 return;
@@ -1008,15 +1016,15 @@
 
             let procedimiento = "";
 
-            if (filas === columnas) {
+            if (filas1 === columnas1 && filas2 === columnas2) {
                 const suma = realizarOperacionElementoACelemento(matriz1, matriz2, (a, b) => a + b);
                 const resta = realizarOperacionElementoACelemento(matriz1, matriz2, (a, b) => a - b);
 
                 let sumaProcedimiento = "<h4>Procedimiento de Suma:</h4>";
                 let restaProcedimiento = "<h4>Procedimiento de Resta:</h4>";
 
-                for (let i = 0; i < filas; i++) {
-                    for (let j = 0; j < columnas; j++) {
+                for (let i = 0; i < filas1; i++) {
+                    for (let j = 0; j < columnas1; j++) {
                         sumaProcedimiento += `<p>${matriz1[i][j]} + ${matriz2[i][j]} = ${suma[i][j]}</p>`;
                         restaProcedimiento += `<p>${matriz1[i][j]} - ${matriz2[i][j]} = ${resta[i][j]}</p>`;
                     }
@@ -1027,7 +1035,7 @@
 
                 procedimiento += sumaProcedimiento + restaProcedimiento;
 
-                if (filas === columnas && calcularDeterminante(matriz2) !== 0) {
+                if (filas1 === columnas1 && calcularDeterminante(matriz2) !== 0) {
                     const inversaMatriz2 = calcularInversa(matriz2);
                     const division = matriz1.map((fila, i) =>
                         inversaMatriz2[0].map((_, j) =>
@@ -1048,8 +1056,8 @@
                     divisionProcedimiento += "<p>Inversa de Matriz 2:</p>";
                     divisionProcedimiento += inversaMatriz2.map(fila => `<p>${fila.join("  ")}</p>`).join("");
 
-                    for (let i = 0; i < filas; i++) {
-                        for (let j = 0; j < columnas; j++) {
+                    for (let i = 0; i < filas1; i++) {
+                        for (let j = 0; j < columnas1; j++) {
                             const elementos = matriz1[i].map((_, k) => `${matriz1[i][k]} * ${inversaMatriz2[k][j]}`).join(" + ");
                             divisionProcedimiento += `<p>Elemento (${i + 1},${j + 1}): ${elementos} = ${division[i][j]}</p>`;
                         }
@@ -1064,13 +1072,13 @@
                 mostrarMensajeError("No se pueden sumar/restar matrices de distinto tamaño.");
             }
 
-            if (columnas === filas) {
+            if (columnas1 === filas2) {
                 const multiplicacion = multiplicarMatrices(matriz1, matriz2);
                 let multiProcedimiento = "<h4>Procedimiento de Multiplicación:</h4>";
-                for (let i = 0; i < filas; i++) {
-                    for (let j = 0; j < columnas; j++) {
+                for (let i = 0; i < filas1; i++) {
+                    for (let j = 0; j < columnas2; j++) {
                         let sum = "";
-                        for (let k = 0; k < columnas; k++) {
+                        for (let k = 0; k < columnas1; k++) {
                             sum += `${matriz1[i][k]} * ${matriz2[k][j]} + `;
                         }
                         multiProcedimiento += `<p>${sum.slice(0, -3)} = ${multiplicacion[i][j]}</p>`;
@@ -1082,7 +1090,7 @@
                 mostrarMensajeError("No se pueden multiplicar las matrices. El número de columnas de la primera matriz debe ser igual al número de filas de la segunda matriz.");
             }
 
-            if (filas === columnas && calcularDeterminante(matriz1) !== 0) {
+            if (filas1 === columnas1 && calcularDeterminante(matriz1) !== 0) {
                 const inversaMatriz1 = calcularInversa(matriz1);
                 let inversaProcedimiento = "<h4>Procedimiento de Inversa:</h4>";
                 inversaProcedimiento += `<p>Determinante de Matriz 1: ${calcularDeterminante(matriz1)}</p>`;
@@ -1103,17 +1111,17 @@
                 mostrarResultado("Inversa de Matriz 1", [["No se puede calcular la inversa. La matriz debe ser cuadrada e invertible."]]);
             }
 
-            if (filas === 3 && columnas === 3) {
+            if (filas1 === 3 && columnas1 === 3) {
                 const { determinante, procedimiento: sarrusProcedimiento } = calcularSarrus(matriz1);
                 mostrarResultadoConProcedimiento("Determinante por Sarrus", [[determinante]], "Procedimiento de Sarrus", sarrusProcedimiento);
             }
 
-            if (filas === columnas) {
+            if (filas1 === columnas1) {
                 const { solucion, procedimiento: gaussProcedimiento } = eliminacionGauss(matriz1.map(fila => [...fila, 0]));
                 mostrarResultadoConProcedimiento("Solución por Eliminación de Gauss", [solucion], "Procedimiento de Gauss", gaussProcedimiento);
             }
 
-            if (filas === columnas) {
+            if (filas1 === columnas1) {
                 const { inversa, procedimiento: gaussJordanProcedimiento } = calcularGaussJordan(matriz1);
                 mostrarResultadoConProcedimiento("Inversa por Gauss-Jordan", inversa, "Procedimiento de Gauss-Jordan", gaussJordanProcedimiento);
             }
@@ -1124,19 +1132,19 @@
             const transpuestaMatriz2 = calcularTranspuesta(matriz2);
             mostrarResultado("Transpuesta de Matriz 2", transpuestaMatriz2);
 
-            if (filas === columnas) {
+            if (filas1 === columnas1) {
                 const cofactoresMatriz1 = calcularCofactores(matriz1);
                 const adjuntaMatriz1 = calcularAdjunta(cofactoresMatriz1);
                 mostrarResultado("Adjunta de Matriz 1", adjuntaMatriz1);
             }
 
-            if (filas === columnas) {
+            if (filas2 === columnas2) {
                 const cofactoresMatriz2 = calcularCofactores(matriz2);
                 const adjuntaMatriz2 = calcularAdjunta(cofactoresMatriz2);
                 mostrarResultado("Adjunta de Matriz 2", adjuntaMatriz2);
             }
 
-            if (filas === columnas && calcularDeterminante(matriz2) !== 0) {
+            if (filas2 === columnas2 && calcularDeterminante(matriz2) !== 0) {
                 const inversaMatriz2 = calcularInversa(matriz2);
                 let inversaProcedimientoMatriz2 = "<h4>Procedimiento de Inversa de Matriz 2:</h4>";
                 inversaProcedimientoMatriz2 += `<p>Determinante de Matriz 2: ${calcularDeterminante(matriz2)}</p>`;
@@ -1156,13 +1164,13 @@
                 mostrarResultado("Inversa de Matriz 2", [["No se puede calcular la inversa. La matriz debe ser cuadrada e invertible."]]);
             }
 
-            if (filas === columnas) {
+            if (filas1 === columnas1) {
                 const matrizAumentadaAdelante = matriz1.map(fila => [...fila, 0]);
                 const { solucion: solucionAdelante, procedimiento: procedimientoAdelante } = sustitucionHaciaAdelante(matrizAumentadaAdelante);
                 mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Adelante", [solucionAdelante], "Procedimiento de Sustitución Hacia Adelante", procedimientoAdelante);
             }
 
-            if (filas === columnas) {
+            if (filas1 === columnas1) {
                 const matrizAumentadaAtras = matriz1.map(fila => [...fila, 0]);
                 const { solucion: solucionAtras, procedimiento: procedimientoAtras } = sustitucionHaciaAtras(matrizAumentadaAtras);
                 mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Atrás", [solucionAtras], "Procedimiento de Sustitución Hacia Atrás", procedimientoAtras);
@@ -1175,14 +1183,14 @@
             let multiplicacionEscalarProcedimientoMatriz1 = "<h4>Procedimiento de Multiplicación Escalar por Matriz 1:</h4>";
             let multiplicacionEscalarProcedimientoMatriz2 = "<h4>Procedimiento de Multiplicación Escalar por Matriz 2:</h4>";
 
-            for (let i = 0; i < filas; i++) {
-                for (let j = 0; j < columnas; j++) {
+            for (let i = 0; i < filas1; i++) {
+                for (let j = 0; j < columnas1; j++) {
                     multiplicacionEscalarProcedimientoMatriz1 += `<p>${escalar} * ${matriz1[i][j]} = ${multiplicacionEscalarMatriz1[i][j]}</p>`;
                 }
             }
 
-            for (let i = 0; i < filas; i++) {
-                for (let j = 0; j < columnas; j++) {
+            for (let i = 0; i < filas2; i++) {
+                for (let j = 0; j < columnas2; j++) {
                     multiplicacionEscalarProcedimientoMatriz2 += `<p>${escalar} * ${matriz2[i][j]} = ${multiplicacionEscalarMatriz2[i][j]}</p>`;
                 }
             }
@@ -1190,12 +1198,12 @@
             mostrarResultadoConProcedimiento("Multiplicación Escalar por Matriz 1", multiplicacionEscalarMatriz1, "Procedimiento de Multiplicación Escalar por Matriz 1", multiplicacionEscalarProcedimientoMatriz1);
             mostrarResultadoConProcedimiento("Multiplicación Escalar por Matriz 2", multiplicacionEscalarMatriz2, "Procedimiento de Multiplicación Escalar por Matriz 2", multiplicacionEscalarProcedimientoMatriz2);
 
-            if (filas === columnas && filas === columnas && filas === columnas) {
-                const multiplicacionA1x1 = matriz1.map((fila, i) => fila.map((_, j) => matriz1[i][j] * matriz2[i][j]));
+            if (filas1 === columnas1 && filas2 === columnas2 && filas1 === columnas2) {
+                const multiplicacionA1x1 = matriz1.map((fila, i) => fila.map((num, j) => num * matriz2[i][j]));
                 let multiplicacionA1x1Procedimiento = "<h4>Procedimiento de Multiplicación A1x1:</h4>";
 
-                for (let i = 0; i < filas; i++) {
-                    for (let j = 0; j < columnas; j++) {
+                for (let i = 0; i < filas1; i++) {
+                    for (let j = 0; j < columnas1; j++) {
                         multiplicacionA1x1Procedimiento += `<p>${matriz1[i][j]} * ${matriz2[i][j]} = ${multiplicacionA1x1[i][j]}</p>`;
                     }
                 }
@@ -1280,19 +1288,19 @@
             const transpuestaVector2 = calcularTranspuesta(matrizVector2);
             mostrarResultado("Transpuesta de Vector 2", transpuestaVector2);
 
-            if (tamano === columnas) {
+            if (tamano === columnas1) {
                 const cofactoresVector1 = calcularCofactores(matrizVector1);
                 const adjuntaVector1 = calcularAdjunta(cofactoresVector1);
                 mostrarResultado("Adjunta de Vector 1", adjuntaVector1);
             }
 
-            if (tamano === columnas) {
+            if (tamano === columnas2) {
                 const cofactoresVector2 = calcularCofactores(matrizVector2);
                 const adjuntaVector2 = calcularAdjunta(cofactoresVector2);
                 mostrarResultado("Adjunta de Vector 2", adjuntaVector2);
             }
 
-            if (tamano === columnas && calcularDeterminante(matrizVector1) !== 0) {
+            if (tamano === columnas1 && calcularDeterminante(matrizVector1) !== 0) {
                 const inversaVector1 = calcularInversa(matrizVector1);
                 let inversaProcedimientoVector1 = "<h4>Procedimiento de Inversa de Vector 1:</h4>";
                 inversaProcedimientoVector1 += `<p>Determinante de Vector 1: ${calcularDeterminante(matrizVector1)}</p>`;
@@ -1312,7 +1320,7 @@
                 mostrarResultado("Inversa de Vector 1", [["No se puede calcular la inversa. El vector debe ser cuadrado e invertible."]]);
             }
 
-            if (tamano === columnas && calcularDeterminante(matrizVector2) !== 0) {
+            if (tamano === columnas2 && calcularDeterminante(matrizVector2) !== 0) {
                 const inversaVector2 = calcularInversa(matrizVector2);
                 let inversaProcedimientoVector2 = "<h4>Procedimiento de Inversa de Vector 2:</h4>";
                 inversaProcedimientoVector2 += `<p>Determinante de Vector 2: ${calcularDeterminante(matrizVector2)}</p>`;
@@ -1332,13 +1340,13 @@
                 mostrarResultado("Inversa de Vector 2", [["No se puede calcular la inversa. El vector debe ser cuadrado e invertible."]]);
             }
 
-            if (tamano === columnas) {
+            if (tamano === columnas1) {
                 const matrizAumentadaAdelanteVector1 = matrizVector1.map(fila => [...fila, 0]);
                 const { solucion: solucionAdelanteVector1, procedimiento: procedimientoAdelanteVector1 } = sustitucionHaciaAdelante(matrizAumentadaAdelanteVector1);
                 mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Adelante de Vector 1", [solucionAdelanteVector1], "Procedimiento de Sustitución Hacia Adelante de Vector 1", procedimientoAdelanteVector1);
             }
 
-            if (tamano === columnas) {
+            if (tamano === columnas1) {
                 const matrizAumentadaAtrasVector1 = matrizVector1.map(fila => [...fila, 0]);
                 const { solucion: solucionAtrasVector1, procedimiento: procedimientoAtrasVector1 } = sustitucionHaciaAtras(matrizAumentadaAtrasVector1);
                 mostrarResultadoConProcedimiento("Solución por Sustitución Hacia Atrás de Vector 1", [solucionAtrasVector1], "Procedimiento de Sustitución Hacia Atrás de Vector 1", procedimientoAtrasVector1);
@@ -1362,7 +1370,7 @@
             mostrarResultadoConProcedimiento("Multiplicación Escalar por Vector 1", [multiplicacionEscalarVector1], "Procedimiento de Multiplicación Escalar por Vector 1", multiplicacionEscalarProcedimientoVector1);
             mostrarResultadoConProcedimiento("Multiplicación Escalar por Vector 2", [multiplicacionEscalarVector2], "Procedimiento de Multiplicación Escalar por Vector 2", multiplicacionEscalarProcedimientoVector2);
 
-            if (tamano === columnas && tamano === columnas && tamano === columnas) {
+            if (tamano === columnas1 && tamano === columnas2 && tamano === columnas1) {
                 const multiplicacionA1x1Vector = vector1.map((_, j) => vector1[j] * vector2[j]);
                 let multiplicacionA1x1ProcedimientoVector = "<h4>Procedimiento de Multiplicación A1x1 de Vectores:</h4>";
 
